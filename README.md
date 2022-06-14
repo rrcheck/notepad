@@ -1,4 +1,4 @@
-# QtNotepad 123456789012345678901234567
+# QtNotepad 1234567890123456789012345678
 ![GitHub Releases](https://img.shields.io/github/downloads/rattle99/QtNotepad/v1.0/total.svg)
 
 <p align="center">
