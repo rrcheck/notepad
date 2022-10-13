@@ -1,0 +1,43 @@
+version: '3'
+services:
+###############################################################################################################
+    cx-engine-agent:
+        image: cx-artifactory:8081/sast-engine-docker/linux_x64/staging/cx-engine-agent-9.2.0:latest        
+        container_name: cx-engine-agent
+        volumes:
+            - engineagentvol:/app
+        networks:
+            - "prod"       
+###############################################################################################################
+    cx-engine-service:
+        image: cx-artifactory:8081/sast-engine-docker/linux_x64/staging/cx-engine-service-9.2.0:latest
+        #build:
+        #    context: .
+        #    dockerfile: Dockerfile
+        container_name: cx-engine-service
+        restart: always
+        depends_on: 
+            - cx-engine-agent
+        volumes:
+            - engineagentvol:/app/EngineServer 
+        ports:
+            - "8088:8088"
+        environment:
+            - ES_MESSAGE_QUEUE_USERNAME=cxuser
+            - ES_MESSAGE_QUEUE_PASSWORD=${MQ_PASSWORD}                                   # Encrypted MessageQueue Password
+            - ES_MESSAGE_QUEUE_URL=${MQ_URL_WITH_PORT}                             # Url with port of Message Queue. Ex: tcp://10.0.0.138:61616
+            - ACCESS_CONTROL_URL=${ACCESS_CONTROL_URL}/CxRestAPI/auth             # Url of Access Control
+            - ENGINE_SERVICE_END_POINT=${ENGINE_SERVICE_API_URL_WITH_PORT}       # Url of Engine Service's exposed endpoint with port. Usually it's the hosting machine's ip
+            - CX_VERSION=${ENGINE_VERSION}                                               # Version of Engine Agent
+            - EA_PUBLISHING_METHOD=${PUBLISHING_METHOD}
+            - EA_ENABLED_QUEUES=${ENABLED_QUEUES}
+            - CxLogsPath=/etc/checkmarx/Logs/EngineService
+            - ENGINE_WORKER_PATH=/app/EngineServer
+            - ENGINE_TLS_ENABLE=false
+        networks:
+            - "prod" 
+###############################################################################################################
+networks:
+    prod:
+volumes:
+    engineagentvol:
