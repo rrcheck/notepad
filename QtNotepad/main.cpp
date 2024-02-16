@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
-/* tests for my butttt*/
+/* tests for my buttttt*/
 
 int main(int argc, char *argv[])
 {
